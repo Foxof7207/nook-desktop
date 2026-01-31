@@ -8,6 +8,6 @@
 <p>I've added the following:</p>
 <ul>
     <li>Critical security fix</li>
-    <li>More modern interface</li>
+    <li>More modern interface (thé current images are not up-to-date) </li>
 
 </ul>
