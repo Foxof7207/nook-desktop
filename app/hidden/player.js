@@ -82,7 +82,7 @@ const convertGameToHuman = (game) => {
 }
 
 const soundLoaded = async (a, isSound = true, url) => {
-  return new Promise(async resolve => { // eslint-disable-line no-async-promise-executor
+  return new Promise(async resolve => {  
     if (paused) {
       resolve()
     } else {
@@ -111,7 +111,7 @@ const startAudio = async () => {
 }
 
 const stopAudio = async (mode = 'sound') => {
-  return new Promise(async resolve => { // eslint-disable-line no-async-promise-executor
+  return new Promise(async resolve => {  
     if (mode === 'rain' || mode === 'all') {
       if (!rain) {
         resolve('skip stop')
@@ -163,7 +163,7 @@ const pauseClicked = async () => {
 }
 
 const fadeSound = async (mode = 'sound', fadeIn = true) => {
-  return new Promise(async resolve => { // eslint-disable-line no-async-promise-executor
+  return new Promise(async resolve => {  
     for (let i = 0; i <= (mode === 'sound' ? (soundVol * 100) : (rainVol * 100)); i += 1) {
       await new Promise(resolve => setTimeout(resolve, 2))
       if ((fadeIn && (mode === 'sound' ? sound : rain)) || !fadeIn) {
@@ -242,7 +242,7 @@ const playRain = async () => {
 }
 
 const timeCheck = async () => {
-  return new Promise(async resolve => { // eslint-disable-line no-async-promise-executor
+  return new Promise(async resolve => {  
     const newHour = getHour()
     if (paused || newHour === hour) {
       resolve('paused || grandFather || newHour === hour')

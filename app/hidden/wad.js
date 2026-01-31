@@ -19823,14 +19823,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let audioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = window.AudioContext || window.webkitAudioContext;
 
-let logStats = {
+const logStats = {
 	verbosity: 0,
 	suppressedLogs: 0
 };
 
-let logMessage = function(message, logLevel){
+const logMessage = function(message, logLevel){
 	logLevel = logLevel || 1;
 	if ( logStats.verbosity >= logLevel ) {
 		console.log(message);
@@ -19838,7 +19838,7 @@ let logMessage = function(message, logLevel){
 	else { logStats.suppressedLogs++; }
 };
     
-let aScene = document.querySelector('a-scene');
+const aScene = document.querySelector('a-scene');
 let context;
 if ( aScene && aScene.audioListener && aScene.audioListener.context){
 	context = aScene.audioListener.context;
@@ -19848,7 +19848,7 @@ else {
 	context = new audioContext();
 }
 
-let unlock = function(){
+const unlock = function(){
 	logMessage('unlock', 2);
 	if ( context.state === 'suspended' ) {
 		logMessage('suspended', 2);
@@ -19866,12 +19866,12 @@ window.addEventListener('click', unlock);
 window.addEventListener('touchstart', unlock);
 window.addEventListener('touchend', unlock);
 // create a wrapper for old versions of `getUserMedia`
-let getUserMedia = (function(window) {
+const getUserMedia = (function(window) {
 	if (window.navigator.mediaDevices && window.navigator.mediaDevices.getUserMedia) {
 		// Browser supports promise based `getUserMedia`
 		return window.navigator.mediaDevices.getUserMedia.bind(window.navigator.mediaDevices);
 	}
-	let navigatorGetUserMedia = window.navigator.getUserMedia || window.navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
+	const navigatorGetUserMedia = window.navigator.getUserMedia || window.navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
 	if (navigatorGetUserMedia) {
 		// Browser supports old `getUserMedia` with callbacks.
 		return function(constraints) {
@@ -19891,7 +19891,7 @@ else { logMessage('Your browser does not support getUserMedia.'); }
 
 
 /** Pre-render a noise buffer instead of generating noise on the fly. **/
-let noiseBuffer = (function(){
+const noiseBuffer = (function(){
 	// the initial seed
 	Math.seed = 6;
 	Math.seededRandom = function(max, min){
@@ -19913,7 +19913,7 @@ let noiseBuffer = (function(){
 
 
 /** Set up the default ADSR envelope. **/
-let constructEnv = function(arg){
+const constructEnv = function(arg){
 	return { //default envelope, if one is not specified on play
 		attack   : lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'env.attack', 0),    // time in seconds from onset to peak volume
 		decay    : lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'env.decay', 0),    // time in seconds from peak volume to sustain volume
@@ -19925,7 +19925,7 @@ let constructEnv = function(arg){
 
 
 /** Set up the default filter and filter envelope. **/
-let constructFilter = function(arg){
+const constructFilter = function(arg){
 
 	if ( !arg.filter ) { return null; }
 
@@ -19952,7 +19952,7 @@ let constructFilter = function(arg){
 
 /** If the Wad uses an audio file as the source, request it from the server.
 Don't let the Wad play until all necessary files have been downloaded. **/
-let requestAudioFile = function(that, callback){
+const requestAudioFile = function(that, callback){
 	var request = new XMLHttpRequest();
 	request.open('GET', that.source, true);
 	request.responseType = 'arraybuffer';
@@ -19975,7 +19975,7 @@ let requestAudioFile = function(that, callback){
 };
 
 /** Set up the vibrato LFO **/
-let constructVibrato = function(arg){
+const constructVibrato = function(arg){
 	if ( arg.vibrato ) {
 		return {
 			shape     : lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'vibrato.shape', 'sine'),
@@ -19989,7 +19989,7 @@ let constructVibrato = function(arg){
 
 
 /** Set up the tremolo LFO **/
-let constructTremolo = function(arg){
+const constructTremolo = function(arg){
 	if ( arg.tremolo ) {
 		return {
 			shape     : lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'tremolo.shape', 'sine'),
@@ -20004,9 +20004,9 @@ let constructTremolo = function(arg){
 /** Grab the reverb impulse response file from a server.
 You may want to change Wad.defaultImpulse to serve files from your own server.
 Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
-let defaultImpulse = 'https://frivolous.biz/audio/widehall.wav';
+const defaultImpulse = 'https://frivolous.biz/audio/widehall.wav';
 
-let constructReverb = function(that, arg){
+const constructReverb = function(that, arg){
 	if ( arg.reverb ) {
 		var impulseURL = arg.reverb.impulse || defaultImpulse;
 		var request = new XMLHttpRequest();
@@ -20034,7 +20034,7 @@ let constructReverb = function(that, arg){
 	}
 };
 
-let constructPanning = function(arg){
+const constructPanning = function(arg){
 	let panning = null;
 	if ( 'panning' in arg ) {
 		panning = { location : arg.panning };
@@ -20072,7 +20072,7 @@ let constructPanning = function(arg){
 	return panning;
 };
 
-let constructDelay = function(arg){
+const constructDelay = function(arg){
 	if ( arg.delay ) {
 		return {
 			delayTime    : lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'delay.delayTime', .5),
@@ -20084,9 +20084,9 @@ let constructDelay = function(arg){
 	else { return null; }
 };
 
-let permissionsGranted = { micConsent: false };
+const permissionsGranted = { micConsent: false };
 /** Special initialization and configuration for microphone Wads **/
-let getConsent = function(that, arg) {
+const getConsent = function(that, arg) {
 	that.nodes             = [];
 	that.mediaStreamSource = null;
 	that.gain              = null;
@@ -20098,7 +20098,7 @@ let getConsent = function(that, arg) {
 	}).catch(function(error) { logMessage('Error setting up microphone input: ', error); }); // This is the error callback.
 };
 
-let setUpMic = function(that, arg){
+const setUpMic = function(that, arg){
 	that.nodes           = [];
 	that.gain            = context.createGain();
 	that.gain.gain.value = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'volume', that.volume);
@@ -20123,15 +20123,15 @@ let setUpMic = function(that, arg){
 
 /** When a note is played, these two functions will schedule changes in volume and filter frequency,
 as specified by the volume envelope and filter envelope **/
-let filterEnv = function(wad, arg){
+const filterEnv = function(wad, arg){
 	wad.filter.forEach(function (filter, index){
 		filter.node.frequency.linearRampToValueAtTime(filter.frequency, arg.exactTime);
 		filter.node.frequency.linearRampToValueAtTime(filter.env.frequency, arg.exactTime + filter.env.attack);
 	});
 };
 
-let playEnv = function(wad, arg){
-	let loop = arg.loop || arg.loop;
+const playEnv = function(wad, arg){
+	const loop = arg.loop || arg.loop;
 	let hold;
 	if ( wad.env.hold === -1 || (loop && !wad.userSetHold && !(arg.env && arg.env.hold) ) ){
 		hold = 999;
@@ -20152,8 +20152,8 @@ let playEnv = function(wad, arg){
 
 /** When all the nodes are set up for this Wad, this function plugs them into each other,
 with special handling for nodes with custom interfaces (e.g. reverb, delay). **/
-let plugEmIn = function(that, arg){
-	let destination = ( arg && arg.destination ) || that.destination;
+const plugEmIn = function(that, arg){
+	const destination = ( arg && arg.destination ) || that.destination;
 	let lastStop;
 	for ( let i = 1; i < that.nodes.length; i++ ) {
 		let from;
@@ -20184,7 +20184,7 @@ let plugEmIn = function(that, arg){
 
 
 /** Initialize and configure an oscillator node **/
-let setUpOscillator = function(that, arg){
+const setUpOscillator = function(that, arg){
 	arg = arg || {};
 	that.soundSource = context.createOscillator();
 	that.soundSource.type = that.source;
@@ -20202,7 +20202,7 @@ let setUpOscillator = function(that, arg){
 };
 
 /** Set the ADSR volume envelope according to play() arguments, or revert to defaults **/
-let setUpEnvOnPlay = function(that, arg){ //_
+const setUpEnvOnPlay = function(that, arg){ //_
 	if ( arg && arg.env ) {
 		that.env.attack  = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'env.attack', that.defaultEnv.attack);
 		that.env.decay   = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'env.decay', that.defaultEnv.decay);
@@ -20225,7 +20225,7 @@ let setUpEnvOnPlay = function(that, arg){ //_
 
 /** Set the filter and filter envelope according to play() arguments, or revert to defaults **/
 
-let createFilters = function(that, arg){
+const createFilters = function(that, arg){
 	if ( arg.filter && !lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(arg.filter) ) {
 		arg.filter = [arg.filter];
 	}
@@ -20245,7 +20245,7 @@ let createFilters = function(that, arg){
 	});
 };
 
-let setUpFilterOnPlay = function(that, arg){
+const setUpFilterOnPlay = function(that, arg){
 	if ( arg && arg.filter && that.filter ) {
 		if ( !lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(arg.filter) ) arg.filter = [arg.filter];
 		createFilters(that, arg);
@@ -20257,7 +20257,7 @@ let setUpFilterOnPlay = function(that, arg){
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Initialize and configure a convolver node for playback **/
-let setUpReverbOnPlay = function(that, arg){
+const setUpReverbOnPlay = function(that, arg){
 	var reverbNode = {
 		interface : 'custom',
 		input : context.createGain(),
@@ -20280,7 +20280,7 @@ let setUpReverbOnPlay = function(that, arg){
 
 
 /** Initialize and configure a panner node for playback **/
-let setUpPanningOnPlay = function(that, arg){
+const setUpPanningOnPlay = function(that, arg){
 	var panning = arg && arg.panning; // can be zero provided as argument
 	if (typeof panning === 'undefined') { panning = that.panning.location; }
 
@@ -20315,7 +20315,7 @@ let setUpPanningOnPlay = function(that, arg){
 
 
 /** Initialize and configure a vibrato LFO Wad for playback **/
-let setUpVibratoOnPlay = function(that, arg, Wad){
+const setUpVibratoOnPlay = function(that, arg, Wad){
 	that.vibrato.wad = new Wad({
 		source : that.vibrato.shape,
 		pitch  : that.vibrato.speed,
@@ -20330,7 +20330,7 @@ let setUpVibratoOnPlay = function(that, arg, Wad){
 
 
 /** Initialize and configure a tremolo LFO Wad for playback **/
-let setUpTremoloOnPlay = function(that, arg, Wad){
+const setUpTremoloOnPlay = function(that, arg, Wad){
 	that.tremolo.wad = new Wad({
 		source : that.tremolo.shape,
 		pitch  : that.tremolo.speed,
@@ -20344,7 +20344,7 @@ let setUpTremoloOnPlay = function(that, arg, Wad){
 	that.tremolo.wad.play();
 };
 
-let setUpDelayOnPlay = function(that, arg){
+const setUpDelayOnPlay = function(that, arg){
 	if ( that.delay ) {
 		if ( !arg.delay ) { arg.delay = {}; }
 		//create the nodes we’ll use
@@ -20376,7 +20376,7 @@ let setUpDelayOnPlay = function(that, arg){
 	}
 };
 
-let constructCompressor = function(that, arg){
+const constructCompressor = function(that, arg){
 	that.compressor = context.createDynamicsCompressor();
 	that.compressor.attack.value    = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'compressor.attack', that.compressor.attack.value);
 	that.compressor.knee.value      = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(arg, 'compressor.knee', that.compressor.knee.value);
@@ -20386,24 +20386,24 @@ let constructCompressor = function(that, arg){
 	that.nodes.push(that.compressor);
 };
 
-let tuna = new tunajs__WEBPACK_IMPORTED_MODULE_0___default.a(context);
-let setUpTunaOnPlay = function(that, arg){
+const tuna = new tunajs__WEBPACK_IMPORTED_MODULE_0___default.a(context);
+const setUpTunaOnPlay = function(that, arg){
 	if ( !( that.tuna || arg.tuna ) ) { return; }
-	let tunaConfig = {};
+	const tunaConfig = {};
 	if ( that.tuna ) {
-		for ( let key in that.tuna ) {
+		for ( const key in that.tuna ) {
 			tunaConfig[key] = that.tuna[key];
 		}
 	}
 
 	// overwrite settings from `this` with settings from arg
 	if ( arg.tuna ) {
-		for ( let key in arg.tuna ) {
+		for ( const key in arg.tuna ) {
 			tunaConfig[key] = arg.tuna[key];
 		}
 	}
-	for ( let key in tunaConfig) {
-		let tunaEffect = new tuna[key](tunaConfig[key]);
+	for ( const key in tunaConfig) {
+		const tunaEffect = new tuna[key](tunaConfig[key]);
 		that.nodes.push(tunaEffect);
 	}
 };
@@ -20438,7 +20438,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let Wad = _wad_js__WEBPACK_IMPORTED_MODULE_5__["default"];
+const Wad = _wad_js__WEBPACK_IMPORTED_MODULE_5__["default"];
 Wad.Poly = _polywad__WEBPACK_IMPORTED_MODULE_1__["default"];
 Wad.SoundIterator = function(args){ return new _sound_iterator__WEBPACK_IMPORTED_MODULE_0__["default"](args, Wad); };
 Wad.pitches = _pitches__WEBPACK_IMPORTED_MODULE_3__["pitches"];
@@ -20480,7 +20480,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let assignMidiMap = function(midiMap, which, success, failure){
+const assignMidiMap = function(midiMap, which, success, failure){
 	which = which || 0;
 	navigator.requestMIDIAccess().then(function(){
 		if ( midiInputs[which] ) {
@@ -20490,14 +20490,14 @@ let assignMidiMap = function(midiMap, which, success, failure){
 		else if ( typeof failure === 'function' ) { failure(); }
 	});
 };
-let midiInstrument = {
+const midiInstrument = {
 	play : function() { Object(_common__WEBPACK_IMPORTED_MODULE_0__["logMessage"])('playing midi');  },
 	stop : function() { Object(_common__WEBPACK_IMPORTED_MODULE_0__["logMessage"])('stopping midi'); }
 };
 
 let midiInputs  = [];
 
-let midiMap = function(event){
+const midiMap = function(event){
 	Object(_common__WEBPACK_IMPORTED_MODULE_0__["logMessage"])(event.receivedTime, event.data, 2);
 	if ( event.data[0] === 144 ) { // 144 means the midi message has note data
 		if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
@@ -20524,7 +20524,7 @@ let midiMap = function(event){
 };
 
 
-let onSuccessCallback = function(midiAccess){
+const onSuccessCallback = function(midiAccess){
 
 	midiInputs = [];
 	var val = midiAccess.inputs.values();
@@ -20543,7 +20543,7 @@ let onSuccessCallback = function(midiAccess){
 	// o.send( [ 0x80, 0x45, 0x7f ], window.performance.now() + 1000 );  // full velocity A4 note off in one second.
 };
 
-let onErrorCallback = function(err){
+const onErrorCallback = function(err){
 	Object(_common__WEBPACK_IMPORTED_MODULE_0__["logMessage"])('Failed to get MIDI access', err);
 };
 
@@ -20551,7 +20551,7 @@ let onErrorCallback = function(err){
 
 	if ( navigator && navigator.requestMIDIAccess ) {
 		try {
-			let midiAccess = await navigator.requestMIDIAccess();
+			const midiAccess = await navigator.requestMIDIAccess();
 			onSuccessCallback(midiAccess);
 		}
 		catch(err) {
@@ -20581,7 +20581,7 @@ __webpack_require__.r(__webpack_exports__);
 //////////////////////////////////////////////////////////////////////////////////////
 /** This object is a mapping of note names to frequencies. **/
 //////////////////////////////////////////////////////////////
-let pitches = {
+const pitches = {
 	'A0'  : 27.5000,
 	'A#0' : 29.1352,
 	'Bb0' : 29.1352,
@@ -20739,7 +20739,7 @@ let pitches = {
 };
 
 
-let pitchesArray = [ // Just an array of note names. This can be useful for mapping MIDI data to notes.
+const pitchesArray = [ // Just an array of note names. This can be useful for mapping MIDI data to notes.
 	'C0',
 	'C#0',
 	'D0',
@@ -20859,28 +20859,28 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let buflen = 2048;
-let buf = new Uint8Array( buflen );
-let MINVAL = 134;  // 128 == zero.  MINVAL is the "minimum detected signal" level.
+const buflen = 2048;
+const buf = new Uint8Array( buflen );
+const MINVAL = 134;  // 128 == zero.  MINVAL is the "minimum detected signal" level.
 
-let noteFromPitch = function( frequency ) {
-	let noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
+const noteFromPitch = function( frequency ) {
+	const noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
 	return Math.round( noteNum ) + 69;
 };
 
-let frequencyFromNoteNumber = function( note ) {
+const frequencyFromNoteNumber = function( note ) {
 	return 440 * Math.pow(2,(note-69)/12);
 };
 
-let centsOffFromPitch = function( frequency, note ) {
+const centsOffFromPitch = function( frequency, note ) {
 	return Math.floor( 1200 * Math.log( frequency / frequencyFromNoteNumber( note ))/Math.log(2) );
 };
 
 
-let autoCorrelate = function( buf, sampleRate ) {
-	let MIN_SAMPLES = 4;    // corresponds to an 11kHz signal
-	let MAX_SAMPLES = 1000; // corresponds to a 44Hz signal
-	let SIZE = 1000;
+const autoCorrelate = function( buf, sampleRate ) {
+	const MIN_SAMPLES = 4;    // corresponds to an 11kHz signal
+	const MAX_SAMPLES = 1000; // corresponds to a 44Hz signal
+	const SIZE = 1000;
 	let best_offset = -1;
 	let best_correlation = 0;
 	let rms = 0;
@@ -20890,7 +20890,7 @@ let autoCorrelate = function( buf, sampleRate ) {
 		return -1;  // Not enough data
 
 	for ( let i = 0; i < SIZE; i++ ) {
-		let val = ( buf[i] - 128 ) / 128;
+		const val = ( buf[i] - 128 ) / 128;
 		rms += val * val;
 	}
 	rms = Math.sqrt(rms/SIZE);
@@ -20926,9 +20926,9 @@ let autoCorrelate = function( buf, sampleRate ) {
 	//  var best_frequency = sampleRate/best_offset;
 };
 
-let volumeAudioProcess = function( event ) {
-	let buf = event.inputBuffer.getChannelData(0);
-	let bufLength = buf.length;
+const volumeAudioProcess = function( event ) {
+	const buf = event.inputBuffer.getChannelData(0);
+	const bufLength = buf.length;
 	let sum = 0;
 	let x;
     
@@ -20943,7 +20943,7 @@ let volumeAudioProcess = function( event ) {
 	}
     
 	// ... then take the square root of the sum.
-	let rms =  Math.sqrt(sum / bufLength);
+	const rms =  Math.sqrt(sum / bufLength);
     
 	// Now smooth this out with the averaging factor applied
 	// to the previous sample - take the max here because we
@@ -20953,7 +20953,7 @@ let volumeAudioProcess = function( event ) {
 
 
 function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
-	let processor = audioContext.createScriptProcessor(512);
+	const processor = audioContext.createScriptProcessor(512);
 	processor.onaudioprocess = volumeAudioProcess;
 	processor.clipping = false;
 	processor.lastClip = 0;
@@ -20985,7 +20985,7 @@ function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
 }
 
 
-let constructRecorder = function(thatWad,arg){
+const constructRecorder = function(thatWad,arg){
 	thatWad.recorder = {};
 	thatWad.recorder.mediaStreamDestination = _common__WEBPACK_IMPORTED_MODULE_0__["context"].createMediaStreamDestination();
 	thatWad.output.connect(thatWad.recorder.mediaStreamDestination);
@@ -21001,13 +21001,13 @@ let constructRecorder = function(thatWad,arg){
 
 	thatWad.recorder.mediaRecorder.onstop = arg.recorder.onstop || function(evt) {
 		// Make blob out of our chunks, and open it.
-		let blob = new Blob(this.recorder.chunks, { 'type' : 'audio/webm;codecs=opus' });
+		const blob = new Blob(this.recorder.chunks, { 'type' : 'audio/webm;codecs=opus' });
 		window.open(URL.createObjectURL(blob));
 	};
 	thatWad.recorder.mediaRecorder.onstop = thatWad.recorder.mediaRecorder.onstop.bind(thatWad);
 
 	// add some aliases to make the API a bit simpler
-	for ( let method of ['start', 'stop', 'pause', 'resume' , 'requestData'] ) {
+	for ( const method of ['start', 'stop', 'pause', 'resume' , 'requestData'] ) {
 		thatWad.recorder[method] = thatWad.recorder.mediaRecorder[method].bind(thatWad.recorder.mediaRecorder);
 	}
 };
@@ -21070,12 +21070,12 @@ class Polywad {
 
 	updatePitch() {
 		this.input.getByteTimeDomainData( buf );
-		let ac = autoCorrelate( buf, _common__WEBPACK_IMPORTED_MODULE_0__["context"].sampleRate );
+		const ac = autoCorrelate( buf, _common__WEBPACK_IMPORTED_MODULE_0__["context"].sampleRate );
 
 		if ( ac !== -1 && ac !== 11025 && ac !== 12000 ) {
-			let pitch = ac;
+			const pitch = ac;
 			this.pitch = Math.floor( pitch ) ;
-			let note = noteFromPitch( pitch );
+			const note = noteFromPitch( pitch );
 			this.noteName = _pitches__WEBPACK_IMPORTED_MODULE_1__["pitchesArray"][note - 12];
 			// Detune doesn't seem to work.
 			// var detune = centsOffFromPitch( pitch, note );
@@ -21086,7 +21086,7 @@ class Polywad {
 			//     this.detuneEstimate = detune
 			// }
 		}
-		let that = this;
+		const that = this;
 		that.rafID = window.requestAnimationFrame( function(){ that.updatePitch(); } );
 	}
 
@@ -21224,7 +21224,7 @@ class Polywad {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-let presets = {
+const presets = {
 	hiHatClosed : { source : 'noise', env : { attack : .001, decay : .008, sustain : .2, hold : .03, release : .01}, filter : { type : 'highpass', frequency : 400, q : 1 } },
 	snare : { source : 'noise', env : {attack : .001, decay : .01, sustain : .2, hold : .03, release : .02}, filter : {type : 'bandpass', frequency : 300, q : .180 } },
 	hiHatOpen : { source : 'noise', env : { attack : .001, decay : .008, sustain : .2, hold : .43, release : .01}, filter : { type : 'highpass', frequency : 100, q : .2 } },

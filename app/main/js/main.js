@@ -463,12 +463,12 @@ const exec = () => {
     window.electronAPI.send('toPlayer', ['paused', paused])
   })
 
-  $('.patreon #supportme').on('click', (e) => {
+  $('.patreon #supportme').on('click', (_e) => {
     logVis('patreonLink')
     window.electronAPI.send('patreon')
   })
 
-  $('.title #openGithub').on('click', (e) => {
+  $('.title #openGithub').on('click', (_e) => {
     logVis('github')
     window.electronAPI.send('github')
   })
@@ -583,7 +583,7 @@ const exec = () => {
     window.electronAPI.send('toPlayer', ['lang', e.target.value])
   })
 
-  $('.settings #clearSettings').on('click', async (e) => {
+  $('.settings #clearSettings').on('click', async (_e) => {
     const r = confirm(`${i18n('Are you sure?')}\n\n${i18n('Click "OK" to proceed and delete all local music files and user settings.')}`)
     if (r) window.electronAPI.send('clearSettings')
   })

@@ -157,12 +157,12 @@ const createWindow = () => {
     hiddenWin.webContents.send('toPlayer', args)
   })
 
-  ipcMain.on('toWindow', (event, args) => {
+  ipcMain.on('toWindow', (_event, args) => {
     console.log('Forwarding toWindow:', args[0])
     win.webContents.send('toWindow', args)
   })
 
-  ipcMain.addListener('clearSettings', async (event) => {
+  ipcMain.addListener('clearSettings', async (_event) => {
     progress(win, 1)
     await new Promise((resolve) => storage.clear((err) => resolve(err)))
     progress(win, 50)
@@ -197,7 +197,7 @@ if (process.platform === 'win32') {
 const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) app.quit()
 else {
-  app.on('second-instance', (event, commandLine, workingDirectory, additionalData) => {
+  app.on('second-instance', (_event, _commandLine, _workingDirectory, _additionalData) => {
     if (myWindow) {
       if (myWindow.isMinimized()) myWindow.restore()
       myWindow.focus()
