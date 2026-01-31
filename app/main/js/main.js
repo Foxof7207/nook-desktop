@@ -1,11 +1,9 @@
 const request = require('superagent')
-const uuid = require('uuid')
-const ipc = require('electron').ipcRenderer
 const $ = window.jQuery
 const Nanobar = window.Nanobar
 const CustomEvent = window.CustomEvent
 const confirm = window.confirm
-const u = uuid.v4()
+const u = window.crypto.randomUUID()
 let i18n
 let blinkers
 let paused = false
@@ -22,7 +20,6 @@ const translations = {
 }
 
 const changelog = require('../release-log.json')
-
 const kkSongs = require('../kk.json')
 const kkHtml = () => {
   let res = ''
@@ -41,7 +38,7 @@ const replaceDataInit = {
 }
 
 const replaceDataObs = {
-  set (obj, prop, value) {
+  set(obj, prop, value) {
     obj[prop] = value
 
     $(`[data-i18n*="${prop}"]`).each((_, e) => {
@@ -77,11 +74,12 @@ const template = `
 <div class="container overlay">
   <div class="error"><div></div></div>
   <div class="header">
-      <span class="title"><span id="openGithub" role="link" data-i18n-title="Nook GitHub">nook</span> |
-          <button id="settings" data-i18n-title="Settings" role="link"></button>
-          <button id="home" class="hidden" data-i18n-title="Home" role="link"></button>
+      <div class="title">
+          <span id="openGithub" role="link" data-i18n-title="Nook GitHub">nook</span>
           <button id="pause" data-i18n-title="Pause" data-i18n-title-alt="Play"></button>
-      </span>
+          <button id="home" class="hidden" data-i18n-title="Home" role="link"></button>
+          <button id="settings" data-i18n-title="Settings" role="link"></button>
+      </div>
       <div class="buttonbox">
           <button id="close" data-i18n-title="Minimize to tray"></button>
           <button id="exit" data-i18n-title="Exit Nook"></button>
@@ -373,7 +371,7 @@ const changeLang = (lang, manual, arg) => {
   })
   obj.find('.log').html(changelogHtml)
 
-  if (!manual) $('body').append(obj)
+  if (!manual) $('.glass-container').append(obj)
 
   if (!manual) {
     setTimeout(() => {
@@ -443,36 +441,36 @@ const logVis = (page) => {
         }
       ]
     }))
-    .then(() => {})
-    .catch(() => {})
+    .then(() => { })
+    .catch(() => { })
 }
 
 const exec = () => {
   logVis('home')
 
   $('#close').on('click', () => {
-    ipc.send('min')
+    window.electronAPI.send('min')
   })
 
   $('#exit').on('click', () => {
-    ipc.send('close')
+    window.electronAPI.send('close')
   })
 
   $('#pause').on('click', () => {
     paused = !paused
     pause(paused)
     // Change class or somethin
-    ipc.send('toPlayer', ['paused', paused])
+    window.electronAPI.send('toPlayer', ['paused', paused])
   })
 
   $('.patreon #supportme').on('click', (e) => {
     logVis('patreonLink')
-    ipc.send('patreon')
+    window.electronAPI.send('patreon')
   })
 
   $('.title #openGithub').on('click', (e) => {
     logVis('github')
-    ipc.send('github')
+    window.electronAPI.send('github')
   })
 
   $('#patreon').on('click', () => {
@@ -514,15 +512,15 @@ const exec = () => {
   })
 
   $('#music').on('change', (e) => {
-    ipc.send('toPlayer', ['musicVol', e.target.value])
+    window.electronAPI.send('toPlayer', ['musicVol', e.target.value])
   })
 
   $('#rain').on('change', (e) => {
-    ipc.send('toPlayer', ['rainVol', e.target.value])
+    window.electronAPI.send('toPlayer', ['rainVol', e.target.value])
   })
 
   $('#gameSelect').on('change', (e) => {
-    ipc.send('toPlayer', ['game', e.target.value])
+    window.electronAPI.send('toPlayer', ['game', e.target.value])
   })
 
   $('#settings').on('click', () => {
@@ -544,63 +542,63 @@ const exec = () => {
   })
 
   $('.settings #grandFather').on('change', (e) => {
-    ipc.send('toPlayer', ['grandFather', e.target.checked])
+    window.electronAPI.send('toPlayer', ['grandFather', e.target.checked])
     setCooldown()
   })
 
   $('.settings #gameRain').on('change', (e) => {
-    ipc.send('toPlayer', ['gameRain', e.target.checked])
+    window.electronAPI.send('toPlayer', ['gameRain', e.target.checked])
     $('#peacefulRain').prop('checked', false)
     setCooldown()
   })
 
   $('.settings #peacefulRain').on('change', (e) => {
-    ipc.send('toPlayer', ['peacefulRain', e.target.checked])
+    window.electronAPI.send('toPlayer', ['peacefulRain', e.target.checked])
     $('#gameRain').prop('checked', false)
     setCooldown()
   })
 
   $('.settings #townTune').on('change', (e) => {
-    ipc.send('toPlayer', ['tuneEnabled', e.target.checked])
+    window.electronAPI.send('toPlayer', ['tuneEnabled', e.target.checked])
     setCooldown()
   })
 
   $('.settings #preferNoDownload').on('change', (e) => {
-    ipc.send('toPlayer', ['preferNoDownload', e.target.checked])
+    window.electronAPI.send('toPlayer', ['preferNoDownload', e.target.checked])
     setCooldown()
   })
 
   $('.settings #kkSaturday').on('change', (e) => {
-    ipc.send('toPlayer', ['kkSaturday', e.target.checked])
+    window.electronAPI.send('toPlayer', ['kkSaturday', e.target.checked])
     setCooldown()
   })
 
   $('.settings #openOnStartup').on('change', (e) => {
-    ipc.send('toPlayer', ['openOnStartup', e.target.checked])
+    window.electronAPI.send('toPlayer', ['openOnStartup', e.target.checked])
     setCooldown()
   })
 
   $('.settings #langSelect').on('change', (e) => {
     changeLang(e.target.value, true)
-    ipc.send('toPlayer', ['lang', e.target.value])
+    window.electronAPI.send('toPlayer', ['lang', e.target.value])
   })
 
   $('.settings #clearSettings').on('click', async (e) => {
     const r = confirm(`${i18n('Are you sure?')}\n\n${i18n('Click "OK" to proceed and delete all local music files and user settings.')}`)
-    if (r) ipc.send('clearSettings')
+    if (r) window.electronAPI.send('clearSettings')
   })
 
   $('.settings #downloadHourly').on('click', async (e) => {
     $(e.currentTarget).text(i18n($(e.currentTarget).attr('data-i18n-alt')))
     $('.settings .download').attr('disabled', 'true')
-    ipc.send('toPlayer', ['downloadHourly'])
+    window.electronAPI.send('toPlayer', ['downloadHourly'])
     setCooldown()
   })
 
   $('.settings #downloadKK').on('click', async (e) => {
     $(e.currentTarget).text(i18n($(e.currentTarget).attr('data-i18n-alt')))
     $('.settings .download').attr('disabled', 'true')
-    ipc.send('toPlayer', ['downloadKK'])
+    window.electronAPI.send('toPlayer', ['downloadKK'])
     setCooldown()
   })
 
@@ -612,7 +610,7 @@ const exec = () => {
       }
     })
 
-    ipc.send('toPlayer', ['kkEnabled', list])
+    window.electronAPI.send('toPlayer', ['kkEnabled', list])
 
     $(e.currentTarget).text(i18n($(e.currentTarget).attr('data-i18n-alt')))
     setTimeout(() => {
@@ -655,7 +653,7 @@ const exec = () => {
 
   $('.tune-settings input[type="range"]').on('input', e => {
     const el = $(e.currentTarget)
-    ipc.send('toPlayer', ['playNote', el.val()])
+    window.electronAPI.send('toPlayer', ['playNote', el.val()])
     el.attr('c', el.val())
   })
 
@@ -665,7 +663,7 @@ const exec = () => {
     $('.tune-settings input[type="range"]').each((i, e) => {
       tune.push(tunes[$(e).val() - 1])
     })
-    ipc.send('toPlayer', ['tune', tune])
+    window.electronAPI.send('toPlayer', ['tune', tune])
     saveTune.text(i18n(saveTune.attr('data-i18n-alt')))
     setTimeout(() => {
       saveTune.text(i18n(saveTune.attr('data-i18n')))
@@ -678,7 +676,7 @@ const exec = () => {
     $('.tune-settings input[type="range"]').each((i, e) => {
       tune.push($(e).val())
     })
-    ipc.send('toPlayer', ['playTune', tune])
+    window.electronAPI.send('toPlayer', ['playTune', tune])
     let i = 1
     $('.tune-settings label').eq(0).addClass('blink')
     blinkers = setInterval(() => {
@@ -702,7 +700,7 @@ const showErr = (err) => {
 }
 
 $(document).ready(() => {
-  ipc.on('toWindow', (event, arg) => {
+  window.electronAPI.receive('toWindow', (arg) => {
     if (arg[0] === 'bar') {
       nanobar.go(+arg[1])
     } else if (arg[0] === 'configs') {
@@ -753,3 +751,8 @@ $(document).ready(() => {
     }
   })
 })
+
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+  console.error('Renderer Error:', msg, 'at', url, ':', lineNo, ':', columnNo, error)
+  return false
+}

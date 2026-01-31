@@ -20,17 +20,17 @@ const assets = app.isPackaged
   ? path.join(process.resourcesPath, '/build/icons/')
   : path.join(__dirname, '/build/icons/')
 
-const { autoUpdater } = require('electron-updater')
+
 
 const progress = (win, num) => {
   win.webContents.send('toWindow', ['bar', num])
 }
 
 let myWindow
+let tray
 let playing = 'Nook - playing nothing!'
 
 const createWindow = () => {
-  let tray
   const win = new BrowserWindow({
     width: 400,
     height: 500,
@@ -38,22 +38,53 @@ const createWindow = () => {
     transparent: true,
     frame: false,
     resizable: false,
-    icon: './icons/nook.png',
+    movable: true,
+    hasShadow: true,
+    icon: path.join(assets, 'nook.png'),
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      sandbox: false,
+      preload: path.join(__dirname, 'app/main/js/preload.js')
     }
   })
 
-  win.loadFile('./app/main/index.html')
+  // Center window on screen
+  win.center()
+
+  console.log('Main window created, loading index.html...')
+  win.loadFile(path.join(__dirname, './app/main/index.html'))
+
+  const createTray = () => {
+    if (tray) return
+
+    const macTrayImage = 'nookTemplate.png'
+    const trayImage = 'nookTray.png'
+    const trayIconPath = os.platform() === 'darwin'
+      ? path.join(assets, macTrayImage)
+      : path.join(assets, trayImage)
+
+    const trayIcon = nativeImage.createFromPath(trayIconPath)
+    tray = new Tray(trayIcon)
+
+    const trayMenu = Menu.buildFromTemplate([
+      { label: 'Show Nook', click: show },
+      { type: 'separator' },
+      { label: 'Exit', click: exit }
+    ])
+
+    tray.setToolTip(playing)
+    tray.setContextMenu(trayMenu)
+    tray.on('click', show)
+  }
 
   const show = () => {
-    win.restore()
+    if (win.isMinimized()) win.restore()
     win.show()
+    win.focus()
     win.setSkipTaskbar(false)
     if (app.dock) app.dock.show()
-    if (tray) tray.destroy()
   }
 
   const exit = () => {
@@ -62,32 +93,13 @@ const createWindow = () => {
   }
 
   const close = (event) => {
-    if (tray) tray.destroy()
-    if (app.dock) app.dock.hide()
-    event.preventDefault()
+    if (event) event.preventDefault()
+
+    createTray()
+
     win.setSkipTaskbar(true)
     win.hide()
-
-    const macTrayImage = 'nookTemplate.png'
-    const trayImage = 'nookTray.png'
-    const trayIcon =
-      os.platform() === 'darwin'
-        ? nativeImage.createFromPath(path.join(assets, macTrayImage))
-        : nativeImage.createFromPath(path.join(assets, trayImage))
-    const trayMenu = Menu.buildFromTemplate([
-      {
-        label: 'Exit',
-        click: exit
-      },
-      {
-        label: 'Show',
-        click: show
-      }
-    ])
-    tray = new Tray(trayIcon)
-    tray.setToolTip(playing)
-    tray.setContextMenu(trayMenu)
-    tray.addListener('click', show)
+    if (app.dock) app.dock.hide()
   }
 
   ipcMain.addListener('patreon', () => {
@@ -109,20 +121,24 @@ const createWindow = () => {
     webPreferences: {
       backgroundThrottling: false,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      sandbox: false,
+      preload: path.join(__dirname, 'app/hidden/player-preload.js')
     },
     skipTaskbar: false,
     excludedFromShownWindowsMenu: true,
     focusable: false
   })
   hiddenWin.setSkipTaskbar(true)
-  hiddenWin.loadFile('./app/hidden/index.html')
+  console.log('Hidden player window created, loading hidden index.html...')
+  hiddenWin.loadFile(path.join(__dirname, './app/hidden/index.html'))
 
   powerMonitor.addListener('suspend', () => {
     hiddenWin.webContents.send('toPlayer', ['pauseIfPlaying'])
   })
 
   ipcMain.on('playerLoaded', () => {
+    console.log('Player loaded, sending settings...')
     hiddenWin.webContents.send('toPlayer', [
       'userSettingsPath',
       userSettingsPath,
@@ -137,10 +153,12 @@ const createWindow = () => {
   })
 
   ipcMain.on('toPlayer', (event, args) => {
+    console.log('Forwarding toPlayer:', args[0])
     hiddenWin.webContents.send('toPlayer', args)
   })
 
   ipcMain.on('toWindow', (event, args) => {
+    console.log('Forwarding toWindow:', args[0])
     win.webContents.send('toWindow', args)
   })
 
@@ -166,9 +184,11 @@ const createWindow = () => {
     else playing = 'Nook - playing nothing!'
     if (tray && !tray.isDestroyed()) tray.setToolTip(playing)
   })
+
+  return win
 }
 
-app.disableHardwareAcceleration()
+// app.disableHardwareAcceleration()
 
 if (process.platform === 'win32') {
   app.setAppUserModelId(app.name)
@@ -189,6 +209,4 @@ else {
   })
 }
 
-autoUpdater.logger = require('electron-log')
-autoUpdater.logger.transports.file.level = 'info'
-autoUpdater.checkForUpdatesAndNotify()
+

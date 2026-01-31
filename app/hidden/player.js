@@ -1,4 +1,3 @@
-const ipc = require('electron').ipcRenderer
 const storage = require('electron-json-storage')
 const fs = require('fs')
 const superagent = require('superagent')
@@ -94,7 +93,7 @@ const soundLoaded = async (a, isSound = true, url) => {
         await fadeSound('sound', true)
         url = url.replace('kk-slider-desktop', 'kk-slider')
         const friendlyHour = url.substring(url.lastIndexOf('/') + 1)
-        ipc.send('playing', [convertGameToHuman(friendlyHour.substring(0, friendlyHour.lastIndexOf('-'))), friendlyHour.substring(friendlyHour.lastIndexOf('-') + 1).replace('.ogg', '')])
+        window.electronAPI.send('playing', [convertGameToHuman(friendlyHour.substring(0, friendlyHour.lastIndexOf('-'))), friendlyHour.substring(friendlyHour.lastIndexOf('-') + 1).replace('.ogg', '')])
       } else {
         rain = a
         rain.start()
@@ -122,7 +121,7 @@ const stopAudio = async (mode = 'sound') => {
           rain.stop()
           rain = null
           for (const s of rainSources) {
-            try { s.stop() } catch (err) {}
+            try { s.stop() } catch (err) { }
           }
           rainSources = []
         }
@@ -130,7 +129,7 @@ const stopAudio = async (mode = 'sound') => {
       }
     }
     if (mode === 'sound' || mode === 'all') {
-      ipc.send('playing', [])
+      window.electronAPI.send('playing', [])
       if (!sound) {
         resolve('skip stop')
       } else {
@@ -140,7 +139,7 @@ const stopAudio = async (mode = 'sound') => {
           sound.stop()
           sound = null
           for (const s of soundSources) {
-            try { s.stop() } catch (err) {}
+            try { s.stop() } catch (err) { }
           }
           soundSources = []
         }
@@ -191,14 +190,14 @@ const playSound = async url => {
 
   if (!audioBuffer) {
     if (preferNoDownload) {
-      ipc.send('toWindow', ['error', 'failedToLoadSound'])
+      window.electronAPI.send('toWindow', ['error', 'failedToLoadSound'])
     } else {
       // Delete corrupted file if it exists
       fs.unlink(url, err => {
         console.error(err)
         storage.remove(`meta-${url.split('/sound/')[1].replace('.ogg', '')}`)
-        ipc.send('toWindow', ['downloadRemoved', url.includes('kk-slider') ? 'kk' : 'hourly'])
-        ipc.send('toWindow', ['error', 'failedToLoadSound'])
+        window.electronAPI.send('toWindow', ['downloadRemoved', url.includes('kk-slider') ? 'kk' : 'hourly'])
+        window.electronAPI.send('toWindow', ['error', 'failedToLoadSound'])
       })
     }
   } else {
@@ -255,10 +254,10 @@ const timeCheck = async () => {
 
       if (kkSaturday && ~['8pm', '9pm', '10pm', '11pm'].indexOf(newHour) && (new Date().getDay() === 6)) {
         game = 'kk-slider-desktop'
-        ipc.send('toWindow', ['updateGame', game])
+        window.electronAPI.send('toWindow', ['updateGame', game])
       } else if (kkSaturday && (newHour === '12am') && (new Date().getDay() === 0)) {
         game = storage.getSync('game').game || 'new-leaf'
-        ipc.send('toWindow', ['updateGame', game])
+        window.electronAPI.send('toWindow', ['updateGame', game])
       }
 
       const gameUrl = game === 'random' ? games[~~(Math.random() * games.length)] : game
@@ -281,9 +280,9 @@ const getUrl = async (oldUrl) => {
 
   if ((s === 'err' || s === 'head fail' || s === 'no headers error') && !lastModified) {
     if (newUrl.includes('rain-')) {
-      ipc.send('toWindow', ['error', 'failedToLoadRainSound'])
+      window.electronAPI.send('toWindow', ['error', 'failedToLoadRainSound'])
     } else {
-      ipc.send('toWindow', ['error', 'failedToLoadSound'])
+      window.electronAPI.send('toWindow', ['error', 'failedToLoadSound'])
     }
 
     return ''
@@ -296,7 +295,7 @@ const getUrl = async (oldUrl) => {
   return `${userSettingsPath}/sound/${newUrl}.ogg`
 }
 
-const handleIpc = async (event, arg) => {
+const handleIpc = async (arg) => {
   const command = arg[0]
   arg.shift()
 
@@ -354,7 +353,7 @@ const handleIpc = async (event, arg) => {
     if (!paused) {
       storage.set('paused', { paused: true })
       pauseClicked()
-      ipc.send('toWindow', ['pause'])
+      window.electronAPI.send('toWindow', ['pause'])
     }
   } else if (command === 'downloadHourly') {
     await downloadHourly()
@@ -395,7 +394,7 @@ const handleIpc = async (event, arg) => {
   } else if (command === 'openOnStartup') {
     openOnStartup = arg[0]
     storage.set('openOnStartup', { enabled: arg[0] })
-    ipc.send('openOnStartup', [arg[0]])
+    window.electronAPI.send('openOnStartup', [arg[0]])
   } else if (command === 'lang') {
     lang = arg[0]
     storage.set('lang', { lang: arg[0] })
@@ -426,7 +425,7 @@ const localSave = async (oldUrl, newUrl, lastModified) => {
                       ws.end()
                       ws.on('finish', () => {
                         storage.set(`meta-${newUrl}`, { lastModified: res.headers['last-modified'] })
-                        ipc.send('toWindow', ['downloadDone', newUrl.includes('kk-slider') ? 'kk' : 'hourly'])
+                        window.electronAPI.send('toWindow', ['downloadDone', newUrl.includes('kk-slider') ? 'kk' : 'hourly'])
                         resolve('good!')
                       })
                       ws.on('error', err => {
@@ -456,7 +455,7 @@ const localSave = async (oldUrl, newUrl, lastModified) => {
 }
 
 const progress = num => {
-  ipc.send('toWindow', ['bar', num])
+  window.electronAPI.send('toWindow', ['bar', num])
 }
 
 const getHour = () => {
@@ -535,19 +534,19 @@ const doMain = () => {
     ]
   }
 
-  ipc.send('toWindow', ['configs', { soundVol: soundVol * 100, rainVol: rainVol * 100, grandFather, game, lang, offlineFiles, offlineKKFiles, tune, tuneEnabled, preferNoDownload, paused, gameRain, peacefulRain, kkEnabled, kkSaturday, openOnStartup, showChangelog }])
+  window.electronAPI.send('toWindow', ['configs', { soundVol: soundVol * 100, rainVol: rainVol * 100, grandFather, game, lang, offlineFiles, offlineKKFiles, tune, tuneEnabled, preferNoDownload, paused, gameRain, peacefulRain, kkEnabled, kkSaturday, openOnStartup, showChangelog }])
 
   superagent
     .get('https://cms.mat.dog/getSupporters')
     .then(res => {
       if (res && res.text) {
-        ipc.send('toWindow', ['patreon', JSON.parse(res.text)])
+        window.electronAPI.send('toWindow', ['patreon', JSON.parse(res.text)])
       } else {
-        ipc.send('toWindow', ['patreon', []])
+        window.electronAPI.send('toWindow', ['patreon', []])
       }
     }).catch(err => {
       console.log(err)
-      ipc.send('toWindow', ['patreon', []])
+      window.electronAPI.send('toWindow', ['patreon', []])
     })
 
   chime = new Wad({
@@ -609,7 +608,7 @@ const downloadHourly = async () => {
         for (let i = 0; i < (g === 'pocket-camp' ? 4 : 24); i++) {
           if (errs >= 3) {
             stop = true
-            ipc.send('toWindow', ['error', 'failedToDownload'])
+            window.electronAPI.send('toWindow', ['error', 'failedToDownload'])
             resolve()
             break
           }
@@ -640,7 +639,7 @@ const downloadHourly = async () => {
     })
   }
 
-  ipc.send('toWindow', ['downloadDoneAll'])
+  window.electronAPI.send('toWindow', ['downloadDoneAll'])
   progress(100)
 }
 
@@ -651,7 +650,7 @@ const downloadKK = async () => {
   let delay = 1000
   for (const s of kkSongs) {
     if (errs >= 3) {
-      ipc.send('toWindow', ['error', 'failedToDownload'])
+      window.electronAPI.send('toWindow', ['error', 'failedToDownload'])
       break
     }
     await new Promise(resolve => {
@@ -679,7 +678,7 @@ const downloadKK = async () => {
     })
   }
 
-  ipc.send('toWindow', ['downloadDoneAll'])
+  window.electronAPI.send('toWindow', ['downloadDoneAll'])
   progress(100)
 }
 
@@ -757,5 +756,5 @@ const playBeep = async (note, delay) => {
   })
 }
 
-ipc.on('toPlayer', handleIpc)
-ipc.send('playerLoaded')
+window.electronAPI.receive('toPlayer', handleIpc)
+window.electronAPI.send('playerLoaded')
