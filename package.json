@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "nook-desktop",
   "version": "1.0.10",
   "description": "Nook desktop",
