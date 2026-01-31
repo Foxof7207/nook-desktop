@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "standard --fix && electron .",
+    "start": "electron .",
     "pack": "electron-builder --dir",
     "dist": "env-cmd electron-builder",
     "release": "env-cmd electron-builder",
-    "lint": "standard"
+    "lint": "eslint ."
   },
   "author": {
     "name": "mn6",
@@ -64,30 +64,21 @@
     "sign": false
   },
   "devDependencies": {
-    "electron": "^33.4.11",
-    "electron-builder": "^26.6.0",
     "@electron/notarize": "^2.5.0",
-    "standard": "^17.1.0"
+    "electron": "^40.1.0",
+    "electron-builder": "^26.6.0",
+    "eslint": "^9.26.0"
   },
   "dependencies": {
-    "@analytics/google-analytics": "^1.0.5",
-    "analytics": "^0.8.1",
     "dotenv": "^16.6.1",
     "electron-json-storage": "^4.6.0",
     "electron-log": "^5.4.3",
     "electron-updater": "^6.7.3",
     "env-cmd": "^10.1.0",
-    "fs": "^0.0.1-security",
     "superagent": "^10.3.0",
     "uuid": "^9.0.1"
   },
   "optionalDependencies": {
     "dmg-license": "^1.0.11"
-  },
-  "standard": {
-    "ignore": [
-      "howler.min.js",
-      "wad.js"
-    ]
   }
 }
