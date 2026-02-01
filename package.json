@@ -8,13 +8,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "env-cmd electron-builder",
-    "release": "env-cmd electron-builder",
+    "minify": "node scripts/minify.js",
+    "dist": "npm run minify && env-cmd electron-builder",
+    "release": "npm run minify && env-cmd electron-builder",
     "lint": "eslint ."
   },
   "author": {
-    "name": "mn6",
-    "email": "mn6@example.com"
+    "name": "Foxof7207"
   },
   "license": "ISC",
   "build": {
@@ -23,7 +23,17 @@
     ],
     "afterSign": "build/notarize.js",
     "productName": "Nook",
-    "appId": "com.mn6.nookdesktop",
+    "appId": "com.foxof7207.nookdesktop",
+    "files": [
+      "index.js",
+      "app/**",
+      "node_modules/**"
+    ],
+    "asarUnpack": [
+      "app/**"
+    ],
+    "asar": true,
+    "artifactName": "${name}-${version}.${ext}",
     "mac": {
       "gatekeeperAssess": false,
       "hardenedRuntime": true,
@@ -49,7 +59,8 @@
         "AppImage"
       ],
       "category": "Audio",
-      "icon": "build/icons"
+      "icon": "build/icons",
+      "maintainer": "Foxof7207"
     }
   },
   "publish": {
@@ -66,9 +77,11 @@
   },
   "devDependencies": {
     "@electron/notarize": "^2.5.0",
+    "cssnano": "^7.1.2",
     "electron": "^40.1.0",
     "electron-builder": "^26.6.0",
-    "eslint": "^9.26.0"
+    "eslint": "^9.26.0",
+    "terser": "^5.46.0"
   },
   "dependencies": {
     "dotenv": "^16.6.1",

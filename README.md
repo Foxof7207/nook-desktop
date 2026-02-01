@@ -4,10 +4,9 @@
   <img alt="nook desktop promotional" src="https://i.imgur.com/NnNdJ0d.png" />
 </p>
 
-<p>Hi there! The original devs of Nook Desktop stopped working on this project, so I decided to revive it!</p>
-<p>I've added the following:</p>
+<p>This project is now maintained by <strong>Foxof7207</strong>. The original devs of Nook Desktop stopped working on this project, and it has been revived with improvements including:</p>
 <ul>
-    <li>Critical security fix</li>
-    <li>More modern interface (the current images are not up-to-date) </li>
-
+    <li>Critical security fixes</li>
+    <li>Modern interface improvements</li>
+    <li>Continued bug fixes and maintenance</li>
 </ul>

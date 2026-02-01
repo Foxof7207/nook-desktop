@@ -441,8 +441,9 @@ const logVis = (page) => {
         }
       ]
     }))
-    .then(() => { })
-    .catch(() => { })
+    .catch((err) => {
+      console.error('Analytics error:', err)
+    })
 }
 
 const exec = () => {
@@ -583,19 +584,19 @@ const exec = () => {
     window.electronAPI.send('toPlayer', ['lang', e.target.value])
   })
 
-  $('.settings #clearSettings').on('click', async (_e) => {
+  $('.settings #clearSettings').on('click', (_e) => {
     const r = confirm(`${i18n('Are you sure?')}\n\n${i18n('Click "OK" to proceed and delete all local music files and user settings.')}`)
     if (r) window.electronAPI.send('clearSettings')
   })
 
-  $('.settings #downloadHourly').on('click', async (e) => {
+  $('.settings #downloadHourly').on('click', (e) => {
     $(e.currentTarget).text(i18n($(e.currentTarget).attr('data-i18n-alt')))
     $('.settings .download').attr('disabled', 'true')
     window.electronAPI.send('toPlayer', ['downloadHourly'])
     setCooldown()
   })
 
-  $('.settings #downloadKK').on('click', async (e) => {
+  $('.settings #downloadKK').on('click', (e) => {
     $(e.currentTarget).text(i18n($(e.currentTarget).attr('data-i18n-alt')))
     $('.settings .download').attr('disabled', 'true')
     window.electronAPI.send('toPlayer', ['downloadKK'])

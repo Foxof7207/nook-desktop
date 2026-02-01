@@ -1,4 +1,4 @@
-const {
+import {
   app,
   BrowserWindow,
   Tray,
@@ -7,12 +7,14 @@ const {
   ipcMain,
   shell,
   powerMonitor
-} = require('electron')
+} from 'electron'
+import os from 'os'
+import storage from 'electron-json-storage'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
 
-const os = require('os')
-const storage = require('electron-json-storage')
-const path = require('path')
-const fs = require('fs')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const userSettingsPath = path.join(app.getPath('userData'), 'userSettings') // change path for userSettings
 storage.setDataPath(userSettingsPath)
@@ -102,9 +104,6 @@ const createWindow = () => {
     if (app.dock) app.dock.hide()
   }
 
-  ipcMain.addListener('patreon', () => {
-    shell.openExternal('https://www.patreon.com/mattu')
-  })
   ipcMain.addListener('github', () => {
     shell.openExternal('https://nook.camp')
   })
@@ -197,7 +196,7 @@ if (process.platform === 'win32') {
 const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) app.quit()
 else {
-  app.on('second-instance', (_event, _commandLine, _workingDirectory, _additionalData) => {
+  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
     if (myWindow) {
       if (myWindow.isMinimized()) myWindow.restore()
       myWindow.focus()

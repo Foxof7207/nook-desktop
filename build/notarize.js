@@ -1,7 +1,7 @@
-require('dotenv').config()
-const { notarize } = require('@electron/notarize')
+import 'dotenv/config.js'
+import { notarize } from '@electron/notarize'
 
-exports.default = async function notarizing (context) {
+export default async function notarizing (context) {
   const { electronPlatformName, appOutDir } = context
   if (electronPlatformName !== 'darwin') {
     return
@@ -10,7 +10,7 @@ exports.default = async function notarizing (context) {
   const appName = context.packager.appInfo.productFilename
 
   return await notarize({
-    appBundleId: 'com.mn6.nook',
+    appBundleId: 'com.foxof7207.nook',
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLEID,
     appleIdPassword: process.env.APPLEIDPASS
