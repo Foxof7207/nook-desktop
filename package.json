@@ -63,9 +63,7 @@
             "x64"
           ]
         }
-      ],
-      "certificateFile": null,
-      "certificatePassword": null
+      ]
     },
     "nsis": {
       "installerIcon": "build/icons/nook.png",
