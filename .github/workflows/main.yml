@@ -57,7 +57,12 @@ jobs:
       - name: Build application
         run: npm run minify
       
-      - name: Build distributables
+      - name: Build Linux (.deb)
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run dist -- --linux deb
+      
+      - name: Build Windows/Mac (Dir)
+        if: matrix.os != 'ubuntu-latest'
         run: npm run pack
       
       - name: List build artifacts
