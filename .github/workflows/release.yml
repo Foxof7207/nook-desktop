@@ -6,7 +6,8 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  build:
+    name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,10 +33,20 @@ jobs:
         run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLEID: ${{ secrets.APPLEID }}
+          APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
 
-      - name: Upload artifacts
+      - name: List build artifacts
+        run: ls -la dist/
+        shell: bash
+
+      - name: Upload artifacts to release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/**
+          files: dist/**/*
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

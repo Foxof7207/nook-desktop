@@ -11,6 +11,7 @@
     "minify": "node scripts/minify.js",
     "dist": "npm run minify && env-cmd electron-builder",
     "release": "npm run minify && env-cmd electron-builder",
+    "build": "node scripts/build-all.js",
     "lint": "eslint ."
   },
   "author": {
@@ -47,11 +48,33 @@
       "category": "public.app-category.music"
     },
     "win": {
-      "artifactName": "${productName}Setup.${ext}",
+      "artifactName": "${productName}Setup-${version}.${ext}",
       "icon": "build/icons/nook.png",
       "target": [
-        "nsis-web"
-      ]
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "certificateFile": null,
+      "certificatePassword": null
+    },
+    "nsis": {
+      "installerIcon": "build/icons/nook.png",
+      "uninstallerIcon": "build/icons/nook.png",
+      "artifactName": "${productName}Setup-${version}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "linux": {
       "target": [
@@ -60,16 +83,12 @@
       ],
       "category": "Audio",
       "icon": "build/icons",
-      "maintainer": "Foxof7207"
+      "maintainer": "Foxof7207",
+      "artifactName": "${name}-${version}-${arch}.${ext}"
     }
   },
   "publish": {
     "provider": "github"
-  },
-  "nsis": {
-    "installerIcon": "build/icons/nook.png",
-    "uninstallerIcon": "build/icons/nook.png",
-    "artifactName": "${productName}Setup.${ext}"
   },
   "dmg": {
     "icon": "build/icons/nook.icns",
