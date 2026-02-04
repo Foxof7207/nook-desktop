@@ -10,3 +10,5 @@
     <li>Modern interface improvements</li>
     <li>Continued bug fixes and maintenance</li>
 </ul>
+
+For the latest bleeding edge version, please download the lastest version from the actions.
