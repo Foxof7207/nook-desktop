@@ -119,7 +119,6 @@ const template = `
               </select>    
           </div>
           <div class="bottom-support">
-            <button id="patreon" data-i18n="patreon" data-i18n-title="Patreon list and support links"></button>
             <button id="changelog" data-i18n="changelog" data-i18n-title="changelog"></button>
           </div>
       </div>
@@ -284,29 +283,6 @@ const template = `
             <button id="play_tune" data-i18n="play" data-i18n-alt="playing..."></button>
           </div>
       </div>
-      <div class="patreon page hidden">
-          <div class="head">
-              <p data-i18n="patreon supporters" role="heading" aria-level="1"></p>
-              <button id="supportme" data-i18n="(support me!)" data-i18n-title="Opens developer's Patreon page"></button>
-          </div>
-          <div class="supporters">
-              <div class="gold">
-                  <p data-i18n="gold supporters" role="heading" aria-level="2"></p>
-                  <ul>
-                  </ul>
-              </div>
-              <div class="silver">
-                  <p data-i18n="silver supporters" role="heading" aria-level="2"></p>
-                  <ul>
-                  </ul>
-              </div>
-              <div class="bronze">
-                  <p data-i18n="bronze supporters" role="heading" aria-level="2"></p>
-                  <ul>
-                  </ul>
-              </div>
-          </div>
-      </div>
       <div class="changelog page hidden">
           <p data-i18n="changelog" role="heading" aria-level="1"></p>
           <div class="log"></div>
@@ -464,25 +440,12 @@ const exec = () => {
     window.electronAPI.send('toPlayer', ['paused', paused])
   })
 
-  $('.patreon #supportme').on('click', (_e) => {
-    logVis('patreonLink')
-    window.electronAPI.send('patreon')
-  })
 
   $('.title #openGithub').on('click', (_e) => {
     logVis('github')
     window.electronAPI.send('github')
   })
 
-  $('#patreon').on('click', () => {
-    logVis('patreon')
-
-    $('.page').addClass('hidden')
-    $('.patreon.page').removeClass('hidden')
-
-    $('#settings').addClass('hidden')
-    $('#home').removeClass('hidden').focus()
-  })
 
   $('#changelog').on('click', () => {
     logVis('changelog')
@@ -737,13 +700,6 @@ $(document).ready(() => {
       $('.settings .download').removeAttr('disabled')
       $('.settings #downloadHourly').text(i18n($('.settings #downloadHourly').attr('data-i18n')))
       $('.settings #downloadKK').text(i18n($('.settings #downloadKK').attr('data-i18n')))
-    } else if (arg[0] === 'patreon') {
-      const template = '<li title="{{fill}}">{{fill}}</li>'
-      Object.entries(arg[1]).forEach(thing => {
-        thing[1].forEach(name => {
-          $(`.${thing[0]} ul`).append(template.replaceAll('{{fill}}', name))
-        })
-      })
     } else if (arg[0] === 'updateGame') {
       $('#gameSelect').val(arg[1])
     } else if (arg[0] === 'pause') {

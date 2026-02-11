@@ -2,7 +2,7 @@ const { ipcRenderer } = require('electron')
 
 window.electronAPI = {
   send: (channel, data) => {
-    const validChannels = ['toPlayer', 'min', 'close', 'patreon', 'github', 'clearSettings', 'openOnStartup']
+    const validChannels = ['toPlayer', 'min', 'close', 'github', 'clearSettings', 'openOnStartup']
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
     }

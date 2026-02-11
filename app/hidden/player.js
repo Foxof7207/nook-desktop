@@ -82,7 +82,7 @@ const convertGameToHuman = (game) => {
 }
 
 const soundLoaded = async (a, isSound = true, url) => {
-  return new Promise(async resolve => {  
+  return new Promise(async resolve => {
     if (paused) {
       resolve()
     } else {
@@ -111,7 +111,7 @@ const startAudio = async () => {
 }
 
 const stopAudio = async (mode = 'sound') => {
-  return new Promise(async resolve => {  
+  return new Promise(async resolve => {
     if (mode === 'rain' || mode === 'all') {
       if (!rain) {
         resolve('skip stop')
@@ -163,7 +163,7 @@ const pauseClicked = async () => {
 }
 
 const fadeSound = async (mode = 'sound', fadeIn = true) => {
-  return new Promise(async resolve => {  
+  return new Promise(async resolve => {
     for (let i = 0; i <= (mode === 'sound' ? (soundVol * 100) : (rainVol * 100)); i += 1) {
       await new Promise(resolve => setTimeout(resolve, 2))
       if ((fadeIn && (mode === 'sound' ? sound : rain)) || !fadeIn) {
@@ -242,7 +242,7 @@ const playRain = async () => {
 }
 
 const timeCheck = async () => {
-  return new Promise(async resolve => {  
+  return new Promise(async resolve => {
     const newHour = getHour()
     if (paused || newHour === hour) {
       resolve('paused || grandFather || newHour === hour')
@@ -536,18 +536,6 @@ const doMain = () => {
 
   window.electronAPI.send('toWindow', ['configs', { soundVol: soundVol * 100, rainVol: rainVol * 100, grandFather, game, lang, offlineFiles, offlineKKFiles, tune, tuneEnabled, preferNoDownload, paused, gameRain, peacefulRain, kkEnabled, kkSaturday, openOnStartup, showChangelog }])
 
-  superagent
-    .get('https://cms.mat.dog/getSupporters')
-    .then(res => {
-      if (res && res.text) {
-        window.electronAPI.send('toWindow', ['patreon', JSON.parse(res.text)])
-      } else {
-        window.electronAPI.send('toWindow', ['patreon', []])
-      }
-    }).catch(err => {
-      console.log(err)
-      window.electronAPI.send('toWindow', ['patreon', []])
-    })
 
   chime = new Wad({
     source: 'chime.ogg',
